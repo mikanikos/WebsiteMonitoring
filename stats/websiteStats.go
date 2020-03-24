@@ -4,39 +4,39 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mikanikos/WebsiteMonitoringTool/aggregators"
 	"github.com/mikanikos/WebsiteMonitoringTool/common"
 	"github.com/mikanikos/WebsiteMonitoringTool/cui"
+	"github.com/mikanikos/WebsiteMonitoringTool/metrics"
 )
 
-// WebsiteStats is a new object that computes aggregated stats based on a user-defined specific
-type WebsiteStats struct {
+// WebsiteStatsHandler is a new object that computes aggregated stats for a website based on a user-defined specific
+type WebsiteStatsHandler struct {
 	website   string
 	timeFrame time.Duration
 	measures  []*common.WebsiteMeasure
 
-	availability    *aggregators.AvailabilityAggregator
-	responseTime    *aggregators.ResponseTimeAggregator
-	maxResponseTime *aggregators.MaxResponseTimeAggregator
-	statusCodes     *aggregators.StatusCodesAggregator
+	availability    *metrics.AvailabilityAggregator
+	responseTime    *metrics.ResponseTimeAggregator
+	maxResponseTime *metrics.MaxResponseTimeAggregator
+	statusCodes     *metrics.StatusCodesAggregator
 
 	mutex sync.RWMutex
 }
 
 // StatsHandler manages the data coming from the monitor and computes stats
-func NewWebsiteStats(url string, timeFrame float64) *WebsiteStats {
-	return &WebsiteStats{
+func NewWebsiteStats(url string, timeFrame float64) *WebsiteStatsHandler {
+	return &WebsiteStatsHandler{
 		website:         url,
 		timeFrame:       time.Duration(timeFrame) * time.Second,
 		measures:        make([]*common.WebsiteMeasure, 0),
-		availability:    aggregators.NewAvailabilityAggregator(),
-		responseTime:    aggregators.NewResponseTimeAggregator(),
-		maxResponseTime: aggregators.NewMaxResponseTimeAggregator(),
-		statusCodes:     aggregators.NewStatusCodesAggregator(),
+		availability:    metrics.NewAvailabilityAggregator(),
+		responseTime:    metrics.NewResponseTimeAggregator(),
+		maxResponseTime: metrics.NewMaxResponseTimeAggregator(),
+		statusCodes:     metrics.NewStatusCodesAggregator(),
 	}
 }
 
-func (stats *WebsiteStats) PurgeOutdatedMeasures() {
+func (stats *WebsiteStatsHandler) PurgeOutdatedMeasures() {
 
 	stats.mutex.Lock()
 	defer stats.mutex.Unlock()
@@ -58,7 +58,7 @@ func (stats *WebsiteStats) PurgeOutdatedMeasures() {
 }
 
 // StatsHandler manages the data coming from the monitor and computes stats
-func (stats *WebsiteStats) UpdateStats(measure *common.WebsiteMeasure) {
+func (stats *WebsiteStatsHandler) UpdateStats(measure *common.WebsiteMeasure) {
 
 	stats.mutex.Lock()
 	defer stats.mutex.Unlock()
@@ -84,7 +84,7 @@ func (stats *WebsiteStats) UpdateStats(measure *common.WebsiteMeasure) {
 	//}
 }
 
-func (stats *WebsiteStats) GetStatsObject() *cui.StatsObject {
+func (stats *WebsiteStatsHandler) GetStatsObject() *cui.StatsObject {
 
 	stats.PurgeOutdatedMeasures()
 

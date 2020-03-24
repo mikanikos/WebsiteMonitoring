@@ -11,7 +11,7 @@ import (
 
 const configDir = "/configs/"
 
-// parse config file given as a parameter and returns the list of website configurations specified
+// parse config file given as a parameter and returns a user configuration object
 func ParseConfigFile(fileName string) (*common.Config, error) {
 
 	_, configFileName, _, ok := runtime.Caller(0)

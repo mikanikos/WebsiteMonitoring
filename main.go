@@ -27,7 +27,7 @@ func main() {
 	// create cui skeleton
 	ui := cui.NewCui(config.StatsConfigs)
 
-	// start monitoring
+	// start monitoring and processing measures
 	managers := make([]*manager.WebsiteManager, 0)
 	for _, wConf := range config.WebsitesConfigs {
 		wm := manager.NewWebsiteManager(wConf, config.AlertConfig, ui)
@@ -35,7 +35,9 @@ func main() {
 		managers = append(managers, wm)
 	}
 
+	// creates new stats manager
 	sm := statsManager.NewStatsManager(config.StatsConfigs, managers, ui)
+	// run the stats manger to periodically retrieve stats
 	sm.Run()
 
 	// start cui

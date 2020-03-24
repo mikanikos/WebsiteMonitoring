@@ -22,7 +22,7 @@ func NewMonitor(config *common.WebsiteConfig) *Monitor {
 	}
 }
 
-// periodically checks the website
+// periodically checks the website and get measures
 func (monitor *Monitor) PeriodicallyMonitorWebsite() {
 
 	// set max timeout to prevent endless waiting, should be smaller than checkInterval

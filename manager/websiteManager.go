@@ -8,23 +8,23 @@ import (
 	"github.com/mikanikos/WebsiteMonitoringTool/stats"
 )
 
-// WebsiteManager manages the data coming from the monitor
+// WebsiteManager manages the data for a website coming from the monitor and handles the processing of measures in the WebsiteStatsHandlers
 type WebsiteManager struct {
 	monitor         *monitor.Monitor
-	WebsiteStatsMap map[string]*stats.WebsiteStats
+	WebsiteStatsMap map[string]*stats.WebsiteStatsHandler
 	alert           *alerts.AvailabilityAlert
 }
 
-// WebsiteManager manages the data coming from the monitor and computes stats
+// NewWebsiteManager creates a new website manager given website and alert configuration and the ui
 func NewWebsiteManager(config *common.WebsiteConfig, alertConfig *common.AlertConfig, ui *cui.Cui) *WebsiteManager {
 	return &WebsiteManager{
 		monitor:         monitor.NewMonitor(config),
-		WebsiteStatsMap: make(map[string]*stats.WebsiteStats, 0),
+		WebsiteStatsMap: make(map[string]*stats.WebsiteStatsHandler, 0),
 		alert:           alerts.NewAvailabilityAlert(config.Url, alertConfig, ui),
 	}
 }
 
-// Start allows the statshandler to start monitoring and processing data
+// Run starts monitoring the website and start processing incoming measure
 func (wm *WebsiteManager) Run(statsConfigs []*common.StatConfig) {
 
 	for _, sConf := range statsConfigs {
@@ -36,7 +36,7 @@ func (wm *WebsiteManager) Run(statsConfigs []*common.StatConfig) {
 	go wm.monitor.PeriodicallyMonitorWebsite()
 }
 
-// process new measure
+// process new Website measures
 func (wm *WebsiteManager) processWebsiteMeasures() {
 	for newMeasure := range wm.monitor.MeasuresChan {
 

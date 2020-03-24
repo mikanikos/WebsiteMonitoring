@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mikanikos/WebsiteMonitoringTool/aggregators"
 	"github.com/mikanikos/WebsiteMonitoringTool/common"
+	"github.com/mikanikos/WebsiteMonitoringTool/metrics"
 )
 
 // AvailabilityAlert is an alert for the availability metric
@@ -16,7 +16,7 @@ type AvailabilityAlert struct {
 	website            string
 	AlertConfig        *common.AlertConfig
 	measures           []*common.WebsiteMeasure
-	availability       *aggregators.AvailabilityAggregator
+	availability       *metrics.AvailabilityAggregator
 	mutex              sync.RWMutex
 	isWebsiteAvailable bool
 	waiting            bool
@@ -30,7 +30,7 @@ func NewAvailabilityAlert(url string, config *common.AlertConfig, ui *cui.Cui) *
 		website:            url,
 		AlertConfig:        config,
 		measures:           make([]*common.WebsiteMeasure, 0),
-		availability:       aggregators.NewAvailabilityAggregator(),
+		availability:       metrics.NewAvailabilityAggregator(),
 		isWebsiteAvailable: true,
 		waiting:            false,
 		channel:            make(chan bool),
