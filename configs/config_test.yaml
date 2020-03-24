@@ -1,0 +1,28 @@
+--- # config file for testing alert logic
+
+websitesConfigs:
+  - url: https://www.datadoghq.com/
+    checkInterval: 3
+
+  - url: https://www.google.com/
+    checkInterval: 2
+
+  - url: https://www.amazon.com/
+    checkInterval: 2
+
+  - url: https://github.com/
+    checkInterval: 2
+
+  - url: http://localhost:8080
+    checkInterval: 2
+
+statsConfigs:
+  - displayInterval: 5
+    timeFrameDuration: 13
+
+  - displayInterval: 22
+    timeFrameDuration: 29
+
+alertConfig:
+  timeFrameDuration: 20
+  threshold: 60

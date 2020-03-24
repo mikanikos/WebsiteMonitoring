@@ -1,0 +1,28 @@
+--- # config file
+
+websitesConfigs:
+  - url: https://www.datadoghq.com/
+    checkInterval: 3
+
+  - url: https://www.google.com/
+    checkInterval: 5
+
+  - url: https://www.amazon.com/
+    checkInterval: 2
+
+  - url: https://github.com/
+    checkInterval: 8
+
+  - url: http://localhost:8080
+    checkInterval: 4
+
+statsConfigs:
+  - displayInterval: 10
+    timeFrameDuration: 600
+
+  - displayInterval: 60
+    timeFrameDuration: 3600
+
+alertConfig:
+  timeFrameDuration: 120
+  threshold: 80
