@@ -19,8 +19,6 @@ type AvailabilityAlert struct {
 	availability       *metrics.AvailabilityAggregator
 	mutex              sync.RWMutex
 	isWebsiteAvailable bool
-	waiting            bool
-	channel            chan bool
 	ui                 *cui.Cui
 }
 
@@ -32,8 +30,6 @@ func NewAvailabilityAlert(url string, config *common.AlertConfig, ui *cui.Cui) *
 		measures:           make([]*common.WebsiteMeasure, 0),
 		availability:       metrics.NewAvailabilityAggregator(),
 		isWebsiteAvailable: true,
-		waiting:            false,
-		channel:            make(chan bool),
 		ui:                 ui,
 	}
 }
@@ -72,34 +68,9 @@ func (alert *AvailabilityAlert) UpdateStats(measure *common.WebsiteMeasure) {
 func (alert *AvailabilityAlert) UpdateAlertData() {
 
 	if !math.IsNaN(alert.availability.GetValue()) {
-		isCurrentlyAvailable := alert.availability.GetValue() > alert.AlertConfig.Threshold
+		isCurrentlyAvailable := alert.availability.GetValue() >= alert.AlertConfig.Threshold
 
-		if ((isCurrentlyAvailable && alert.isWebsiteAvailable) || (!isCurrentlyAvailable && !alert.isWebsiteAvailable)) && alert.waiting {
-			close(alert.channel)
-		}
-
-		if ((!isCurrentlyAvailable && alert.isWebsiteAvailable) || (isCurrentlyAvailable && !alert.isWebsiteAvailable)) && !alert.waiting {
-			alert.waiting = true
-			go alert.waitTimer()
-		}
-	}
-}
-
-// routine used to wait for displaying an alert
-func (alert *AvailabilityAlert) waitTimer() {
-
-	ticker := time.NewTicker(time.Duration(alert.AlertConfig.TimeFrameDuration) * time.Second)
-
-	defer func() { alert.waiting = false }()
-
-	for {
-		select {
-
-		case <-alert.channel:
-			alert.channel = make(chan bool)
-			return
-
-		case <-ticker.C:
+		if (!isCurrentlyAvailable && alert.isWebsiteAvailable) || (isCurrentlyAvailable && !alert.isWebsiteAvailable) {
 			alert.isWebsiteAvailable = !alert.isWebsiteAvailable
 			alert.ui.UpdateAlertsView(alert.getAlertMessage(alert.isWebsiteAvailable))
 		}

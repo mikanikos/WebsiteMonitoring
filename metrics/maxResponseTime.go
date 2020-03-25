@@ -28,8 +28,8 @@ func (aggregator *MaxResponseTimeAggregator) AddMeasure(measure *common.WebsiteM
 
 func (aggregator *MaxResponseTimeAggregator) RemoveMeasure(measure *common.WebsiteMeasure) {
 	// binary search to find element to remove
-	i := sort.Search(len(aggregator.sortedResponseTimes), func(i int) bool { return aggregator.sortedResponseTimes[i] == measure.ResponseTime })
-	if i < len(aggregator.sortedResponseTimes) {
+	i := sort.Search(len(aggregator.sortedResponseTimes), func(i int) bool { return aggregator.sortedResponseTimes[i] >= measure.ResponseTime })
+	if i < len(aggregator.sortedResponseTimes) && aggregator.sortedResponseTimes[i] == measure.ResponseTime {
 		copy(aggregator.sortedResponseTimes[i:], aggregator.sortedResponseTimes[i+1:])
 		aggregator.sortedResponseTimes[len(aggregator.sortedResponseTimes)-1] = 0
 		aggregator.sortedResponseTimes = aggregator.sortedResponseTimes[:len(aggregator.sortedResponseTimes)-1]
